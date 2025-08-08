@@ -55,7 +55,7 @@ public class UserService {
         User user = userOpt.get();
 
         // 2️⃣ Compare passwords
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return ResponseUtil.error("Invalid password");
         }
 
