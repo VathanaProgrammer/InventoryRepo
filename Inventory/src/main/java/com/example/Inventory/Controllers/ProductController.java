@@ -43,9 +43,9 @@ public class ProductController {
         return ResponseEntity.status(res.get("success").equals(true) ? 200 : 400).body(res);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteProduct(@RequestBody ProductRequest request){
-        Map<String, Object> res = productService.deleteProduct(request);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable String id){
+        Map<String, Object> res = productService.deleteProduct(id);
         return ResponseEntity.status(res.get("success").equals(true) ? 200 : 400).body(res);
     }
 

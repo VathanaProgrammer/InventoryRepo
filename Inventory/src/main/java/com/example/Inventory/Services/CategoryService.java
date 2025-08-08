@@ -48,16 +48,16 @@ public class CategoryService {
         return ResponseUtil.success("Category updated successfully", category);
     }
 
-    public Map<String, Object> deleteCategory(CategoryRequest request){
-        if(request == null){
+    public Map<String, Object> deleteCategory(String id){
+        if(id == null){
             return ResponseUtil.error("Category request is null");
         }
 
-        Optional<Category> categoryOpt = categoryRepository.findById(request.getId());
+        Optional<Category> categoryOpt = categoryRepository.findById(id);
         Category category = categoryOpt.get();
 
         categoryRepository.delete(category);
 
-        return ResponseUtil.success("Category deleted successfully", category);
+        return ResponseUtil.success("Category deleted successfully");
     }
 }

@@ -1,5 +1,6 @@
 package com.example.Inventory.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -27,6 +28,7 @@ public class Supplier {
     private String address;
 
     // Optional: One supplier supplies many products
+    @JsonIgnore
     @OneToMany(mappedBy = "supplier")
     private List<Product> products;
 

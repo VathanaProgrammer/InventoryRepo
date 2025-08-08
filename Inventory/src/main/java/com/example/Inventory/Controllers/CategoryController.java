@@ -33,9 +33,9 @@ public class CategoryController {
         return ResponseEntity.status(res.get("success").equals(true) ? 200 : 400).body(res);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteCategory(@RequestBody CategoryRequest request){
-        Map<String, Object> res = categoryService.deleteCategory(request);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable String id){
+        Map<String, Object> res = categoryService.deleteCategory(id);
         return ResponseEntity.status(res.get("success").equals(true) ? 200 : 400).body(res);
     }
 }

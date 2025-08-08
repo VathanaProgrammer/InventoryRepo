@@ -53,7 +53,7 @@ public class ProductService {
 
         productRepository.save(product);
 
-        return ResponseUtil.success("Product created successfully", product);
+        return ResponseUtil.success("Product created successfully");
     }
 
     public List<ProductDTO> filterProducts(String searchText, Long categoryId) {
@@ -83,15 +83,16 @@ public class ProductService {
 
         productRepository.save(product);
 
-        return ResponseUtil.success("Product updated successfully", product);
+        return ResponseUtil.success("Product updated successfully");
     }
 
-    public Map<String, Object> deleteProduct(ProductRequest request){
-        if(request == null){
+    @Transactional
+    public Map<String, Object> deleteProduct(String id){
+        if(id == null){
             return ResponseUtil.error("Product request is null");
         }
 
-        Optional<Product> productOpt = productRepository.findById(request.getId());
+        Optional<Product> productOpt = productRepository.findById(id);
 
         if(productOpt.isEmpty()){
             return ResponseUtil.error("Product not found");
@@ -101,6 +102,6 @@ public class ProductService {
 
         productRepository.delete(product);
 
-        return ResponseUtil.success("Product deleted successfully", product);
+        return ResponseUtil.success("Product deleted successfully");
     }
 }
