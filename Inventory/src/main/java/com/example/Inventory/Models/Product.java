@@ -17,6 +17,9 @@ public class Product {
     @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false)
+    private Integer quantity = 0;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -24,7 +27,6 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
-
 
     @Column(precision = 10, scale = 2)
     private BigDecimal price = BigDecimal.ZERO;
@@ -85,4 +87,14 @@ public class Product {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+
 }

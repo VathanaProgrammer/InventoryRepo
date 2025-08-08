@@ -46,6 +46,7 @@ public class ProductService {
 
         Product product = new Product();
         product.setName(request.getName());
+        product.setQuantity(request.getQuantity());
         product.setPrice(request.getPrice());
         product.setCategory(category);
         product.setSupplier(supplier);

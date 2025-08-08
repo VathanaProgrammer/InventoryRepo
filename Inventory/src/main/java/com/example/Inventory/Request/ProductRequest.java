@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public class ProductRequest {
     private String id;
     private String name;
+    private Integer quantity;
     private String categoryId;
     private String supplierId;
     private BigDecimal price;
@@ -32,5 +33,9 @@ public class ProductRequest {
 
     public String getId() {
         return id;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
     }
 }
