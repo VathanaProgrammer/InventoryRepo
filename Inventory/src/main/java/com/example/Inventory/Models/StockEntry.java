@@ -1,14 +1,17 @@
 package com.example.Inventory.Models;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Data
 @Entity
 @Table(name = "stock_entries")
 public class StockEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -33,6 +36,11 @@ public class StockEntry {
 
     public enum EntryType {
         in, out
+    }
+
+    @PrePersist
+    public void generateId() {
+        this.id = "STKENTY-" + UUID.randomUUID().toString().substring(0, 8);
     }
 
     // Getters and Setters

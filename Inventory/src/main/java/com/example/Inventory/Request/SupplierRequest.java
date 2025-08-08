@@ -1,46 +1,17 @@
-package com.example.Inventory.Models;
+package com.example.Inventory.Request;
 
-import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-import java.util.UUID;
-
 @Data
-@Entity
-@Table(name = "suppliers")
-public class Supplier {
-
-    @Id
+public class SupplierRequest {
     private String id;
-
     private String name;
-
     private String contactPerson;
-
     private String phone;
-
     private String email;
-
-
-    @Column(columnDefinition = "TEXT")
     private String address;
 
-    // Optional: One supplier supplies many products
-    @OneToMany(mappedBy = "supplier")
-    private List<Product> products;
-
-    @PrePersist
-    public void generateId() {
-        this.id = "SUP-" + UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public SupplierRequest() {
     }
 
     public String getName() {
@@ -83,11 +54,11 @@ public class Supplier {
         this.address = address;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public String getId() {
+        return id;
     }
 }
