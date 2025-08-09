@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +42,13 @@ public class SaleService {
             return ResponseUtil.error("Sale items are required");
         }
 
-        // Find user entity from userId in request
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found: " + request.getUserId()));
 
         Sale sale = new Sale();
         sale.setCustomerName(request.getCustomerName());
         sale.setSaleDate(request.getSaleDate() != null ? request.getSaleDate() : LocalDateTime.now());
-
-        sale.setUser(user);  // <---- set user here!
+        sale.setUser(user);
 
         double totalAmount = 0;
         List<SaleItem> saleItems = new ArrayList<>();
@@ -57,6 +56,11 @@ public class SaleService {
         for (SaleItemRequest itemReq : request.getSaleItems()) {
             Product product = productRepository.findById(itemReq.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
+
+            // Check stock availability before reducing
+            if (product.getQuantity() < itemReq.getQuantity()) {
+                return ResponseUtil.error("Insufficient stock for product: " + product.getName());
+            }
 
             SaleItem saleItem = new SaleItem();
             saleItem.setSale(sale);
@@ -67,24 +71,31 @@ public class SaleService {
             totalAmount += saleItem.getQuantity() * saleItem.getPrice();
             saleItems.add(saleItem);
 
-            StockEntryRequest stockEntryRequest = new StockEntryRequest();
-            stockEntryRequest.setProductId(product.getId());
-            stockEntryRequest.setUserId(request.getUserId());
-            stockEntryRequest.setType("out");
-            stockEntryRequest.setQuantity(itemReq.getQuantity());
-            stockEntryRequest.setPrice(itemReq.getPrice());
-            stockEntryRequest.setNote("Sale ID: " + sale.getId());
-
-            stockService.createStockEntry(stockEntryRequest);
+            // Reduce product stock
+            product.setQuantity(product.getQuantity() - itemReq.getQuantity());
+            productRepository.save(product);
         }
 
         sale.setSaleItems(saleItems);
         sale.setTotalAmount(totalAmount);
 
-        saleRepository.save(sale);
+        // Save sale and sale items
+        Sale savedSale = saleRepository.save(sale);
+
+        // Create stock entries now that sale id exists
+        for (SaleItem saleItem : saleItems) {
+            StockEntryRequest stockEntryRequest = new StockEntryRequest();
+            stockEntryRequest.setProductId(saleItem.getProduct().getId());
+            stockEntryRequest.setUserId(request.getUserId());
+            stockEntryRequest.setType("out");
+            stockEntryRequest.setQuantity(saleItem.getQuantity());
+            stockEntryRequest.setPrice(BigDecimal.valueOf(saleItem.getPrice()));
+            stockEntryRequest.setNote("Sale ID: " + savedSale.getId());
+
+            stockService.createStockEntry(stockEntryRequest);
+        }
 
         return ResponseUtil.success("Sale created successfully");
     }
-
 
 }
